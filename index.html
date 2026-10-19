@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c111b">
+  <meta name="description" content="APEX 圈速實驗室：記錄 GT7 與模擬賽車圈速，追蹤進步，免費且免登入。">
+  <title>APEX｜圈速實驗室</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b101a;--surface:#141b28;--panel:#171f2d;--border:#2b3545;--text:#f3f5f8;--muted:#99a6b7;--accent:#ffbd62;--teal:#67dec9;--danger:#ff8f8f;--shadow:0 28px 70px rgba(0,0,0,.25)}
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(ellipse at 80% -15%,#27354a 0,transparent 48%),var(--bg);color:var(--text);font-family:Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;line-height:1.5;min-height:100vh}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5}
+    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+    .container{width:min(1180px,calc(100% - 44px));margin:auto}
+    .topbar{height:84px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);letter-spacing:.12em;font-size:21px;font-weight:900}
+    .brand-mark{height:35px;width:35px;display:grid;place-items:center;border-radius:10px;background:var(--accent);color:#18202b;letter-spacing:-.1em;font-style:italic;font-size:24px}
+    .brand-sub{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.02em;margin-left:5px}
+    .top-actions{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 12px rgba(103,222,201,.7)}
+    .hero{padding:65px 0 41px;position:relative;overflow:hidden}
+    .eyebrow{display:flex;gap:11px;align-items:center;color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.18em}
+    .eyebrow::before{content:"";width:26px;height:2px;background:var(--accent)}
+    h1{font-size:clamp(40px,5.5vw,72px);letter-spacing:-.045em;line-height:1.09;margin:16px 0 17px;font-weight:850}
+    h1 em{font-style:normal;color:var(--accent)}
+    .hero-desc{font-size:15px;color:var(--muted);max-width:530px;line-height:1.85;margin:0}
+    .hero-grid{display:grid;grid-template-columns:1fr 380px;gap:30px;align-items:center}
+    .hero-art{height:238px;position:relative;display:grid;place-items:center}
+    .hero-art::before{content:"";position:absolute;inset:16px 3px;background:linear-gradient(125deg,rgba(255,189,98,.08),transparent 52%),repeating-linear-gradient(0deg,transparent 0 39px,rgba(255,255,255,.04) 40px 41px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.04) 40px 41px);clip-path:polygon(18% 0,100% 0,80% 100%,0 100%);transform:skewX(-6deg)}
+    .art-ring{width:220px;height:220px;border:2px dashed rgba(255,189,98,.35);border-radius:50%;display:grid;place-items:center;transform:rotate(-17deg)}
+    .art-ring::after{content:"";position:absolute;inset:22px;border:2px solid rgba(255,189,98,.17);border-radius:50%}
+    .art-value{font-size:54px;font-weight:850;letter-spacing:-.06em;color:var(--accent);font-variant-numeric:tabular-nums;transform:rotate(17deg);z-index:1;white-space:nowrap}
+    .art-tag{position:absolute;right:12px;bottom:9px;background:#293445;padding:8px 14px;font-weight:800;font-size:11px;letter-spacing:.1em;border:1px solid #465369;border-radius:7px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px;margin-bottom:30px}
+    .stat{padding:24px 23px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(140deg,rgba(255,255,255,.035),transparent),var(--surface);min-width:0}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:750;letter-spacing:.04em}
+    .stat-value{font-size:29px;font-weight:800;letter-spacing:-.035em;margin-top:7px;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .stat-value.accent{color:var(--accent)}.stat-value.teal{color:var(--teal)}
+    .stat-sub{font-size:11px;color:var(--muted);margin-top:6px}
+    .dashboard{display:grid;grid-template-columns:minmax(0,1.58fr) minmax(310px,1fr);gap:18px;align-items:start}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;min-width:0;box-shadow:var(--shadow)}
+    .panel-head{display:flex;align-items:start;justify-content:space-between;padding:24px 25px 17px;gap:12px}
+    h2{font-size:18px;margin:0;letter-spacing:-.02em}
+    .section-sub{color:var(--muted);font-size:12px;margin:6px 0 0}
+    .tag{font-size:10px;font-weight:800;letter-spacing:.08em;border:1px solid #48515f;border-radius:8px;padding:6px 9px;color:var(--muted);white-space:nowrap}
+    .chart-wrap{padding:0 15px 12px}
+    .chart{width:100%;height:auto;display:block;overflow:visible}
+    .chart text{font:12px Inter,system-ui,sans-serif;fill:var(--muted)}
+    .legend{display:flex;align-items:center;gap:9px;margin:0 25px 23px;color:var(--muted);font-size:12px}
+    .legend-dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+    .empty{padding:52px 14px;text-align:center;color:var(--muted);min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
+    .empty-icon{font-size:38px;color:var(--accent);line-height:1}
+    .empty strong{color:var(--text);font-size:15px}
+    .empty small{font-size:12px;max-width:310px;line-height:1.65}
+    .form-body{padding:0 25px 25px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .field{display:flex;flex-direction:column;gap:7px;min-width:0}
+    .field.full{grid-column:1/-1}
+    .field label{font-weight:750;font-size:12px;color:#c8d1dd}
+    .field input,.field select,.field textarea{color:var(--text);background:#0f1621;border:1px solid #344050;border-radius:9px;padding:11px 12px;outline:none;width:100%;min-height:44px}
+    .field input::placeholder,.field textarea::placeholder{color:#68778a}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,189,98,.12)}
+    .field textarea{resize:vertical;min-height:64px}
+    .field .hint{font-size:11px;color:var(--muted)}
+    input::-webkit-calendar-picker-indicator{filter:invert(.9)}
+    .primary{background:var(--accent);color:#151923;border:0;border-radius:10px;min-height:46px;padding:11px 16px;font-weight:850;transition:filter .15s ease}
+    .primary:hover{filter:brightness(1.1)}
+    .secondary{background:transparent;color:var(--text);border:1px solid #445062;border-radius:10px;min-height:40px;padding:8px 13px;font-size:12px;font-weight:700}
+    .secondary:hover{background:#273241}
+    .form-actions{display:flex;gap:9px;margin-top:17px}.form-actions .primary{flex:1}
+    .notice{margin:12px 0 0;color:var(--muted);font-size:11px;line-height:1.6}
+    .error{color:var(--danger);font-size:12px;min-height:18px;margin-top:10px}
+    .records{margin-top:20px;margin-bottom:50px}
+    .records-header{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:24px 25px 16px;flex-wrap:wrap}
+    .record-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .filter-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:0 25px 16px}
+    .filter-bar select{width:100%;min-width:0;color:#d6dee7;background:#101723;border:1px solid #384457;border-radius:9px;padding:10px;font-size:12px}
+    .scroll-table{overflow-x:auto;padding:0 24px 14px}
+    table{width:100%;border-collapse:collapse;min-width:640px;font-size:13px}
+    th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;color:var(--muted);padding:12px 10px;text-align:left;border-bottom:1px solid var(--border)}
+    td{padding:15px 10px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:middle}
+    tbody tr:last-child td{border-bottom:0}
+    td strong{font-weight:800}.record-time{color:var(--accent);font-variant-numeric:tabular-nums;font-size:15px;font-weight:800}
+    .pill{border-radius:7px;padding:4px 7px;color:var(--teal);background:rgba(103,222,201,.1);font-size:10px;font-weight:800;display:inline-block}
+    .muted{color:var(--muted)}
+    .row-btn{border:none;background:transparent;color:#c5d2e0;text-decoration:underline;text-underline-offset:3px;font-size:12px;margin-right:10px;padding:3px 0}
+    .row-btn.danger{color:#ffa5a5}
+    .table-empty{text-align:center;padding:28px;color:var(--muted);font-size:13px}
+    footer{border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:21px 0 36px;font-size:11px;color:var(--muted)}
+    footer strong{color:#dce5ef;letter-spacing:.08em}
+    .toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,20px);border:1px solid #557268;background:#1a342f;color:#d4fff5;border-radius:10px;box-shadow:0 14px 40px #0008;padding:13px 18px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10;text-align:center;max-width:calc(100vw - 40px)}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:980px){.hero-grid{grid-template-columns:1fr 245px}.hero-art{height:190px}.art-ring{width:175px;height:175px}.art-value{font-size:42px}.dashboard{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:750px){.hero-grid,.dashboard{grid-template-columns:1fr}.hero{padding:38px 0 26px}.hero-art{display:none}.stats{margin-bottom:20px}.filter-bar{grid-template-columns:1fr 1fr}.filter-bar select:last-child{grid-column:1/-1}.topbar{height:68px}.top-actions{font-size:11px}}
+    @media(max-width:470px){.container{width:min(100% - 28px,1180px)}.brand-sub{display:none}h1{font-size:42px}.stat{padding:19px 16px}.stat-value{font-size:24px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.records-header,.panel-head{padding-left:17px;padding-right:17px}.form-body{padding:0 17px 20px}.filter-bar{margin-left:17px;margin-right:17px}.scroll-table{padding-left:10px;padding-right:10px}footer{flex-direction:column;align-items:flex-start}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <a href="#top" class="brand" aria-label="回到 APEX 圈速實驗室首頁"><span class="brand-mark">A</span><span>APEX <span class="brand-sub">LAP LAB</span></span></a>
+      <div class="top-actions"><span class="status-dot" aria-hidden="true"></span><span>免登入 · 資料儲存在本機</span></div>
+    </header>
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">YOUR PERSONAL RACING DATA</div>
+            <h1 id="hero-title">每一圈，<br>都比上一圈<em>更快。</em></h1>
+            <p class="hero-desc">記錄 GT7、iRacing、ACC 等模擬賽車的單圈成績，追蹤最佳圈速與穩定度。讓每一次練習，都留下看得見的進步。</p>
+          </div>
+          <div class="hero-art" aria-hidden="true"><div class="art-ring"><div class="art-value">01:42.386</div></div><div class="art-tag">CHASE THE APEX ↗</div></div>
+        </div>
+      </section>
+      <section class="stats" aria-label="圈速數據摘要">
+        <div class="stat"><div class="stat-label">紀錄圈數</div><div class="stat-value" id="stat-count">0</div><div class="stat-sub">目前篩選條件</div></div>
+        <div class="stat"><div class="stat-label">最佳單圈</div><div class="stat-value accent" id="stat-best">--:--.---</div><div class="stat-sub" id="stat-best-sub">尚無資料</div></div>
+        <div class="stat"><div class="stat-label">平均圈速</div><div class="stat-value" id="stat-avg">--:--.---</div><div class="stat-sub">越低代表越快</div></div>
+        <div class="stat"><div class="stat-label">圈速標準差</div><div class="stat-value teal" id="stat-std">--</div><div class="stat-sub">越低代表越穩定</div></div>
+      </section>
+      <section class="dashboard" aria-label="圈速趨勢與新增紀錄">
+        <article class="panel">
+          <div class="panel-head"><div><h2>圈速趨勢</h2><p class="section-sub">依照日期排序，線條越低代表成績越快</p></div><span class="tag">LAP ANALYTICS</span></div>
+          <div id="chart-root" class="chart-wrap" role="img" aria-label="圈速折線圖"></div>
+          <div class="legend"><span class="legend-dot"></span><span>圈速（秒）／目前篩選資料，最多顯示最近 30 筆</span></div>
+        </article>
+        <article class="panel" id="entry-panel">
+          <div class="panel-head"><div><h2 id="form-title">新增圈速紀錄</h2><p class="section-sub">輸入一圈的成績，開始累積你的紀錄</p></div><span class="tag">NEW LAP +</span></div>
+          <div class="form-body">
+            <form id="lap-form" novalidate>
+              <div class="form-grid">
+                <div class="field"><label for="game">遊戲</label><select id="game" required><option>Gran Turismo 7</option><option>iRacing</option><option>Assetto Corsa Competizione</option><option>Assetto Corsa EVO</option><option>Le Mans Ultimate</option><option>其他</option></select></div>
+                <div class="field"><label for="lap-date">日期</label><input type="date" id="lap-date" required></div>
+                <div class="field full"><label for="track">賽道</label><input type="text" id="track" list="track-options" maxlength="70" placeholder="例：鈴鹿賽道 Suzuka" required><datalist id="track-options"><option value="鈴鹿賽道 Suzuka"><option value="Spa-Francorchamps"><option value="Nürburgring GP"><option value="富士 Speedway"><option value="Monza"><option value="Laguna Seca"></datalist></div>
+                <div class="field full"><label for="car">車款</label><input type="text" id="car" maxlength="80" placeholder="例：Porsche 911 GT3 R" required></div>
+                <div class="field full"><label for="lap-time">圈速</label><input id="lap-time" type="text" inputmode="decimal" placeholder="例：1:42.386" aria-describedby="time-hint" required><span class="hint" id="time-hint">格式 m:ss.mmm 或 ss.mmm（例：1:42.386）</span></div>
+                <div class="field full"><label for="notes">備註（選填）</label><textarea id="notes" maxlength="180" placeholder="例：T1 煞車點提早，最後一彎還能再快"></textarea></div>
+              </div>
+              <div class="error" id="form-error" role="alert" aria-live="polite"></div>
+              <div class="form-actions"><button class="primary" id="save-btn" type="submit">＋ 儲存這一圈</button><button class="secondary" id="cancel-btn" type="button" hidden>取消編輯</button></div>
+            </form>
+            <p class="notice">資料只存在目前瀏覽器，不會傳送到伺服器。建議定期匯出 CSV 備份。</p>
+          </div>
+        </article>
+      </section>
+      <section class="panel records" aria-label="圈速歷史紀錄">
+        <div class="records-header"><div><h2>歷史紀錄 <span class="muted" id="record-count">(0)</span></h2><p class="section-sub">可以篩選、編輯、刪除，也可以匯出所有資料</p></div><div class="record-actions"><button class="secondary" id="demo-btn" type="button">載入範例</button><button class="secondary" id="export-btn" type="button">↓ 匯出 CSV</button><button class="secondary" id="clear-btn" type="button">清空全部</button></div></div>
+        <div class="filter-bar"><select id="filter-game" aria-label="依遊戲篩選"><option value="">全部遊戲</option></select><select id="filter-track" aria-label="依賽道篩選"><option value="">全部賽道</option></select><select id="filter-car" aria-label="依車款篩選"><option value="">全部車款</option></select></div>
+        <div class="scroll-table"><table><thead><tr><th>日期</th><th>遊戲</th><th>賽道 / 車款</th><th>圈速</th><th>操作</th></tr></thead><tbody id="record-body"></tbody></table></div>
+      </section>
+    </main>
+    <footer><span><strong>APEX LAP LAB</strong> © <span id="footer-year"></span> · Built with AI, refined by humans.</span><span>一個為賽車愛好者設計的互動網頁 · GitHub Pages Ready</span></footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+    (() => {
+      'use strict';
+      const STORAGE_KEY = 'apex-lap-lab-v1';
+      const $ = (id) => document.getElementById(id);
+      const gameEl=$('game'), dateEl=$('lap-date'), trackEl=$('track'), carEl=$('car'), timeEl=$('lap-time'), noteEl=$('notes');
+      const filterGame=$('filter-game'),filterTrack=$('filter-track'),filterCar=$('filter-car');
+      let laps = load(), editingId = null, toastTimer;
+
+      function load(){
+        try {
+          const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+          return Array.isArray(raw) ? raw.filter(x=>x && typeof x.id==='string' && typeof x.date==='string' && typeof x.game==='string' && typeof x.track==='string' && typeof x.car==='string' && Number.isFinite(x.ms) && x.ms>0) : [];
+        }catch(err){console.warn('無法讀取儲存資料',err);return []}
+      }
+      function save(){
+        try{localStorage.setItem(STORAGE_KEY,JSON.stringify(laps));return true}
+        catch(err){console.warn('無法儲存',err);$('form-error').textContent='此瀏覽器禁止儲存資料，請檢查瀏覽器設定或儲存空間。';return false}
+      }
+      function today(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+      function parseTime(input){
+        const s=input.trim(),match=s.match(/^(?:(\d{1,3}):)?([0-5]?\d)\.(\d{1,3})$/);
+        if(!match)return null;
+        const min=Number(match[1]||0),sec=Number(match[2]),milli=Number(match[3].padEnd(3,'0'));
+        const value=(min*60+sec)*1000+milli;
+        return value>0 && value<3600000 ? value : null;
+      }
+      function formatTime(ms){if(!Number.isFinite(ms))return '--:--.---';let n=Math.round(ms);const min=Math.floor(n/60000);n%=60000;return `${String(min).padStart(2,'0')}:${String(Math.floor(n/1000)).padStart(2,'0')}.${String(n%1000).padStart(3,'0')}`}
+      function fmtSeconds(ms){return `${(ms/1000).toFixed(3)} 秒`}
+      function newId(){return typeof crypto!=='undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`}
+      function filtered(){return laps.filter(l=>(!filterGame.value||l.game===filterGame.value)&&(!filterTrack.value||l.track===filterTrack.value)&&(!filterCar.value||l.car===filterCar.value))}
+      function fillSelect(sel,placeholder,items){
+        const prior=sel.value;sel.replaceChildren(new Option(placeholder,''));
+        [...new Set(items)].sort((a,b)=>a.localeCompare(b,'zh-Hant')).forEach(v=>sel.add(new Option(v,v)));
+        sel.value=[...sel.options].some(o=>o.value===prior)?prior:'';
+      }
+      function updateFilters(){fillSelect(filterGame,'全部遊戲',laps.map(l=>l.game));fillSelect(filterTrack,'全部賽道',laps.map(l=>l.track));fillSelect(filterCar,'全部車款',laps.map(l=>l.car));}
+      function stats(rows){
+        const count=rows.length;$('stat-count').textContent=count;
+        $('stat-best').textContent=count?formatTime(Math.min(...rows.map(l=>l.ms))):'--:--.---';
+        $('stat-avg').textContent=count?formatTime(rows.reduce((a,l)=>a+l.ms,0)/count):'--:--.---';
+        const avg=count?rows.reduce((a,l)=>a+l.ms,0)/count:0;
+        const sd=count?Math.sqrt(rows.reduce((a,l)=>a+(l.ms-avg)**2,0)/count):null;
+        $('stat-std').textContent=count?fmtSeconds(sd):'--';
+        const best=rows.find(l=>l.ms===Math.min(...rows.map(r=>r.ms)));
+        $('stat-best-sub').textContent=best?`${best.track} · ${best.date}`:'尚無資料';
+      }
+      function makeSvgEl(tag,attrs={},text){const el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));if(text!=null)el.textContent=text;return el}
+      function showChart(rows){
+        const target=$('chart-root');target.replaceChildren();
+        const plot=[...rows].sort((a,b)=>a.date.localeCompare(b.date)||(a.createdAt||0)-(b.createdAt||0)).slice(-30);
+        if(!plot.length){target.innerHTML='<div class="empty"><span class="empty-icon">⌁</span><strong>還沒有圈速資料</strong><small>從右側輸入第一筆圈速，或按「載入範例」看看互動圖表效果。</small></div>';return}
+        const w=680,h=280,x0=74,x1=657,y0=20,y1=227;
+        const vals=plot.map(l=>l.ms/1000),lo=Math.min(...vals),hi=Math.max(...vals),spread=Math.max(hi-lo,0.4),min=lo-spread*.17,max=hi+spread*.17;
+        const x=i=>plot.length===1?(x0+x1)/2:x0+i*(x1-x0)/(plot.length-1);
+        const y=v=>y1-(v-min)/(max-min)*(y1-y0);
+        const svg=makeSvgEl('svg',{viewBox:`0 0 ${w} ${h}`,class:'chart',role:'img','aria-label':`${plot.length} 筆圈速趨勢圖，範圍 ${min.toFixed(1)} 秒到 ${max.toFixed(1)} 秒`});
+        for(let i=0;i<5;i++){
+          const v=min+(max-min)*i/4,yy=y(v);
+          svg.append(makeSvgEl('line',{x1:x0,y1:yy,x2:x1,y2:yy,stroke:'#384454','stroke-width':1,'stroke-dasharray':'4 5'}));
+          svg.append(makeSvgEl('text',{x:x0-11,y:yy+4,'text-anchor':'end'},`${v.toFixed(1)}s`));
+        }
+        if(plot.length>1){
+          const points=vals.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+          const area=makeSvgEl('path',{d:`M ${x(0)} ${y1} L ${vals.map((v,i)=>`${x(i)} ${y(v)}`).join(' L ')} L ${x(vals.length-1)} ${y1} Z`,fill:'rgba(255,189,98,.08)'});
+          svg.append(area,makeSvgEl('polyline',{points,fill:'none',stroke:'#ffbd62','stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'}));
+        }
+        plot.forEach((l,i)=>{
+          const circle=makeSvgEl('circle',{cx:x(i),cy:y(vals[i]),r:plot.length>20?3.5:5.3,fill:'#ffbd62',stroke:'#141b28','stroke-width':2});
+          circle.append(makeSvgEl('title',{},`${l.date} · ${l.track} · ${l.car} · ${formatTime(l.ms)}`));svg.append(circle);
+        });
+        const ticks=[0,Math.floor((plot.length-1)/2),plot.length-1];
+        [...new Set(ticks)].forEach(i=>svg.append(makeSvgEl('text',{x:x(i),y:259,'text-anchor':i===0?'start':i===plot.length-1?'end':'middle'},plot[i].date.slice(5))));
+        target.append(svg);
+      }
+      function appendTextElement(parent,tag,content,className){const node=document.createElement(tag);node.textContent=content;if(className)node.className=className;parent.append(node);return node}
+      function drawTable(rows){
+        const body=$('record-body');body.replaceChildren();$('record-count').textContent=`(${rows.length})`;
+        if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=5;td.className='table-empty';td.textContent=laps.length?'此篩選條件下沒有紀錄，試試其他賽道或車款。':'目前沒有紀錄，新增一圈或載入範例試試！';tr.append(td);body.append(tr);return}
+        [...rows].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||0)-(a.createdAt||0)).forEach(l=>{
+          const tr=document.createElement('tr');
+          appendTextElement(tr,'td',l.date,'muted');
+          const gameTd=document.createElement('td');appendTextElement(gameTd,'span',l.game,'pill');tr.append(gameTd);
+          const info=document.createElement('td');appendTextElement(info,'strong',l.track);appendTextElement(info,'div',l.car,'muted');if(l.notes)appendTextElement(info,'small',l.notes,'muted');tr.append(info);
+          appendTextElement(tr,'td',formatTime(l.ms),'record-time');
+          const actions=document.createElement('td'),edit=document.createElement('button'),del=document.createElement('button');edit.className='row-btn';edit.type='button';edit.textContent='編輯';edit.addEventListener('click',()=>startEdit(l.id));del.className='row-btn danger';del.type='button';del.textContent='刪除';del.addEventListener('click',()=>deleteLap(l.id));actions.append(edit,del);tr.append(actions);body.append(tr);
+        });
+      }
+      function render(){updateFilters();const rows=filtered();stats(rows);showChart(rows);drawTable(rows);}
+      function notify(message){const t=$('toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
+      function resetForm(){$('lap-form').reset();dateEl.value=today();editingId=null;$('form-title').textContent='新增圈速紀錄';$('save-btn').textContent='＋ 儲存這一圈';$('cancel-btn').hidden=true;$('form-error').textContent=''}
+      function startEdit(id){const l=laps.find(v=>v.id===id);if(!l)return;editingId=id;gameEl.value=l.game;dateEl.value=l.date;trackEl.value=l.track;carEl.value=l.car;timeEl.value=formatTime(l.ms);noteEl.value=l.notes||'';$('form-title').textContent='編輯圈速紀錄';$('save-btn').textContent='儲存修改';$('cancel-btn').hidden=false;$('form-error').textContent='';$('entry-panel').scrollIntoView({behavior:'smooth',block:'start'});trackEl.focus({preventScroll:true})}
+      function deleteLap(id){if(!window.confirm('確定刪除這筆圈速紀錄嗎？此操作無法復原。'))return;const before=laps.length;laps=laps.filter(l=>l.id!==id);if(laps.length===before)return;if(!save()){laps=load();return}if(editingId===id)resetForm();render();notify('已刪除紀錄')}
+      $('lap-form').addEventListener('submit',(e)=>{
+        e.preventDefault();const err=$('form-error');err.textContent='';
+        const game=gameEl.value,date=dateEl.value,track=trackEl.value.trim(),car=carEl.value.trim(),notes=noteEl.value.trim(),ms=parseTime(timeEl.value);
+        if(!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)){err.textContent='請選擇有效日期。';return}
+        if(!track||!car){err.textContent='請填寫賽道與車款。';return}
+        if(!ms){err.textContent='圈速格式不正確，請輸入例如 1:42.386（秒數需小於 60）。';timeEl.focus();return}
+        const backup=laps.slice();
+        if(editingId){const item=laps.find(l=>l.id===editingId);if(!item){resetForm();render();return}Object.assign(item,{game,date,track,car,notes,ms})}
+        else{laps.push({id:newId(),createdAt:Date.now(),game,date,track,car,notes,ms})}
+        if(!save()){laps=backup;return}
+        const wasEdit=Boolean(editingId);resetForm();render();notify(wasEdit?'圈速紀錄已更新！':'成功儲存新圈速！');
+      });
+      $('cancel-btn').addEventListener('click',resetForm);
+      [filterGame,filterTrack,filterCar].forEach(el=>el.addEventListener('change',()=>{const rows=filtered();stats(rows);showChart(rows);drawTable(rows)}));
+      $('clear-btn').addEventListener('click',()=>{if(!laps.length){notify('目前沒有需要清除的紀錄');return}if(!window.confirm(`確定清空全部 ${laps.length} 筆資料嗎？建議先匯出 CSV 備份。`))return;const backup=laps;laps=[];if(!save()){laps=backup;return}resetForm();render();notify('已清空全部紀錄')});
+      $('demo-btn').addEventListener('click',()=>{
+        const demo=[['2026-10-01',104882],['2026-10-04',103754],['2026-10-08',103139],['2026-10-12',102667],['2026-10-15',102386]].map(([date,ms],i)=>({id:newId(),createdAt:Date.now()+i,game:'Gran Turismo 7',date,track:'鈴鹿賽道 Suzuka',car:'Porsche 911 GT3 R',ms,notes:'範例資料（非真實圈速）'}));
+        if(laps.length && !window.confirm('將加入 5 筆示範資料（不會覆蓋原有資料），要繼續嗎？'))return;
+        const backup=laps.slice();laps.push(...demo);if(!save()){laps=backup;return}filterGame.value='';filterTrack.value='';filterCar.value='';render();notify('已新增 5 筆範例圈速，可直接試用篩選與編輯')
+      });
+      function csvCell(val){const s=String(val??'');return `"${s.replace(/"/g,'""')}"`}
+      $('export-btn').addEventListener('click',()=>{
+        if(!laps.length){notify('尚無資料可以匯出');return}
+        const headers=['日期','遊戲','賽道','車款','圈速','秒數','備註'];
+        const lines=[headers,...laps.map(l=>[l.date,l.game,l.track,l.car,formatTime(l.ms),(l.ms/1000).toFixed(3),l.notes||''])].map(row=>row.map(csvCell).join(','));
+        const blob=new Blob(['\uFEFF',lines.join('\r\n')],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`APEX_圈速紀錄_${today()}.csv`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);notify('CSV 已匯出')
+      });
+      dateEl.value=today();$('footer-year').textContent=new Date().getFullYear();render();
+    })();
+  </script>
+</body>
+</html>
